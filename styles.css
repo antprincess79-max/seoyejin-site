@@ -188,3 +188,48 @@ address{font-style:normal}
 .footer address a{text-decoration:underline;text-underline-offset:3px}
 .skip{position:absolute;left:-9999px;top:8px;z-index:100;background:var(--navy);color:#fff;padding:10px 16px;border-radius:8px}
 .skip:focus{left:8px}
+
+/* contact form page */
+.hot{margin-top:6px}
+.hot a{display:inline-block;color:var(--gold);font-weight:800;font-size:1.3rem}
+.form-wrap{display:grid;grid-template-columns:.8fr 1.2fr;gap:48px;align-items:start}
+.form-side .sec-sub{margin-bottom:20px}
+.side-list{margin:14px 0 22px}
+.side-list li{padding:10px 0;border-top:1px solid var(--line);font-size:.95rem;color:var(--muted)}
+.side-list b{display:block;color:var(--navy)}
+.form-side address a{color:var(--navy);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.inquiry,.form-done{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:28px}
+.inquiry .row.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:.9rem;font-weight:500;margin-bottom:5px}
+.field label em{color:#c0392b;font-style:normal}
+.inquiry input,.inquiry select,.inquiry textarea{width:100%;padding:13px 12px;border:1px solid #cfcabd;border-radius:8px;font:500 .95rem var(--font);background:#fff;color:var(--text)}
+.inquiry textarea{resize:vertical;min-height:120px}
+.has-error input,.has-error select,.has-error textarea{border-color:#c0392b}
+.err{color:#c0392b;font-size:.84rem;margin-top:5px}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+.consent{background:var(--alt);border-radius:10px;padding:14px 16px;margin:4px 0 18px;font-size:.84rem;color:var(--muted)}
+.consent label{display:flex;gap:10px;align-items:flex-start;cursor:pointer}
+.consent input{width:auto;margin-top:4px;flex:none}
+.consent.has-error{outline:1px solid #c0392b}
+.inquiry .btn{width:100%}
+.inquiry .note{font-size:.82rem;color:var(--muted);margin-top:10px;text-align:center}
+.form-done h2{font-size:1.4rem}
+.form-done p{color:var(--muted);margin:10px 0 20px}
+.form-done a{color:var(--navy);font-weight:700;text-decoration:underline}
+@media(max-width:860px){.form-wrap{grid-template-columns:1fr;gap:28px}.inquiry .row.two{grid-template-columns:1fr}}
+@media(max-width:600px){.inquiry,.form-done{padding:20px}}
+
+.form-err{background:#fdecea;border-radius:8px;padding:10px 14px;margin-bottom:12px}
+.inquiry .btn:disabled{opacity:.6;cursor:wait;transform:none}
+
+/* contact form: mobile polish */
+.consent input[type=checkbox]{width:22px;height:22px;margin-top:2px;accent-color:var(--navy)}
+@media(max-width:600px){
+  .inquiry,.form-done{padding:18px 16px}
+  /* iOS Safari는 16px 미만 입력칸에 포커스하면 화면을 확대하므로 16px로 */
+  .inquiry input,.inquiry select,.inquiry textarea{font-size:16px}
+  .inquiry .btn{padding:15px 20px}
+  .form-wrap{gap:24px}
+  .hot a{font-size:1.2rem}
+}

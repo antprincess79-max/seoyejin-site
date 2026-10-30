@@ -28,7 +28,7 @@
             <a href={`${base}#curriculum`}>커리큘럼</a>
             <a href={`${base}#reviews`}>수강 후기</a>
           </nav>
-          <a className="cta-sm" href="#contact">강의 의뢰</a>
+          <a className="cta-sm" href="contact.html">강의 의뢰</a>
         </div>
       </header>
       </>

@@ -17,7 +17,7 @@
             <p className="sub">회계 출신 AI 강사, 숫자로 증명하는 실무 교육</p>
             <p className="lead">{S.intro}</p>
             <div className="btn-row">
-              <a className="btn primary" href="#contact">강의 의뢰하기</a>
+              <a className="btn primary" href="contact.html">강의 의뢰하기</a>
               <a className="btn ghost light" href="#curriculum">커리큘럼 보기</a>
             </div>
             <ul className="creds">
