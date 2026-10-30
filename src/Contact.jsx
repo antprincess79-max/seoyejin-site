@@ -1,5 +1,5 @@
 (function () {
-  const { useState } = React;
+  const { useState, useRef } = React;
   const S = window.SITE;
 
   const TOPICS = [...S.programs.map((p) => p.title), "AI 콘텐츠·숏폼 영상 제작", "AI 진로·커리어 역량 강화", "기타 (문의 내용에 적어 주세요)"];
@@ -39,6 +39,7 @@
     const [sent, setSent] = useState(false);
     const [sending, setSending] = useState(false);
     const [serverError, setServerError] = useState("");
+    const lock = useRef(false);
     const viaServer = Boolean(S.formEndpoint);
 
     const set = (k) => (e) => setV({ ...v, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value });
@@ -56,6 +57,8 @@
     }
 
     async function sendToServer() {
+      if (lock.current) return; // 전송 중에 다시 눌러도 중복 전송되지 않도록 즉시 잠금
+      lock.current = true;
       setSending(true);
       setServerError("");
       try {
@@ -80,6 +83,7 @@
       } catch (err) {
         setServerError(`전송 중 문제가 발생했습니다. 잠시 후 다시 시도하시거나 ${S.phone} 으로 연락해 주세요.`);
       } finally {
+        lock.current = false;
         setSending(false);
       }
     }

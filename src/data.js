@@ -8,7 +8,7 @@ window.SITE = {
   email: "mersey77@naver.com",
   blog: "https://blog.naver.com/mersey77",
   // 구글 Apps Script 웹 앱 URL(.../exec). 비워 두면 메일 앱이 열리는 방식으로 동작합니다.
-  formEndpoint: "",
+  formEndpoint: "https://script.google.com/macros/s/AKfycbxp9GCOnevHxA6dRL2-jwgoCx2_ciOT2A86UPRzUqtgAzNaI40kpRbIiPg3iQmJi9atUQ/exec",
   intro:
     "UCLA·Drake MBA, 前 KPMG·안진회계법인 출신. 회계와 금융의 실무 감각으로 임직원이 교육 직후 업무에 바로 적용하는 AI 활용 교육을 설계합니다.",
   facts: [
