@@ -3,7 +3,7 @@
   const S = window.SITE;
 
   const TOPICS = [...S.programs.map((p) => p.title), "AI 콘텐츠·숏폼 영상 제작", "AI 진로·커리어 역량 강화", "기타 (문의 내용에 적어 주세요)"];
-  const EMPTY = { org: "", name: "", phone: "", email: "", topic: TOPICS[0], audience: "", date: "", message: "", agree: false, website: "" };
+  const EMPTY = { org: "", title: "", name: "", phone: "", email: "", topic: TOPICS[0], audience: "", date: "", message: "", agree: false, website: "" };
 
   function validate(v) {
     const e = {};
@@ -37,9 +37,52 @@
     const [v, setV] = useState(EMPTY);
     const [errors, setErrors] = useState({});
     const [sent, setSent] = useState(false);
+    const [sending, setSending] = useState(false);
+    const [serverError, setServerError] = useState("");
+    const viaServer = Boolean(S.formEndpoint);
 
     const set = (k) => (e) => setV({ ...v, [k]: e.target.type === "checkbox" ? e.target.checked : e.target.value });
     const aria = (k) => ({ "aria-invalid": errors[k] ? "true" : undefined, "aria-describedby": errors[k] ? k + "-err" : undefined });
+
+    // 폼 내용을 문의 본문 한 덩어리로 정리 (시트의 "강의 문의 내용" 칸과 메일 본문에 같이 쓰입니다)
+    function buildMessage() {
+      return [
+        `[관심 교육] ${v.topic}`,
+        `[교육 대상·인원] ${v.audience || "-"}`,
+        `[희망 일정] ${v.date || "-"}`,
+        "",
+        v.message.trim(),
+      ].join("\n");
+    }
+
+    async function sendToServer() {
+      setSending(true);
+      setServerError("");
+      try {
+        const res = await fetch(S.formEndpoint, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain;charset=utf-8" }, // 사전 요청(CORS)을 피하기 위한 형식
+          body: JSON.stringify({
+            name: v.name.trim(),
+            email: v.email.trim(),
+            phone: v.phone.trim(),
+            company: [v.org.trim(), v.title.trim()].filter(Boolean).join(", "),
+            message: buildMessage(),
+            website: v.website,
+          }),
+        });
+        const out = await res.json();
+        if (!out.ok) {
+          setServerError(out.error || "전송에 실패했습니다. 입력 내용을 확인해 주세요.");
+          return;
+        }
+        setSent(true);
+      } catch (err) {
+        setServerError(`전송 중 문제가 발생했습니다. 잠시 후 다시 시도하시거나 ${S.phone} 으로 연락해 주세요.`);
+      } finally {
+        setSending(false);
+      }
+    }
 
     function onSubmit(e) {
       e.preventDefault();
@@ -52,20 +95,35 @@
         if (el) el.focus();
         return;
       }
+      if (viaServer) {
+        sendToServer();
+        return;
+      }
+      // 서버 주소가 없을 때: 메일 앱으로 대신 보냅니다
       const body = [
-        `기관·회사명: ${v.org}`,
+        `기관·회사명: ${[v.org, v.title].filter(Boolean).join(", ")}`,
         `담당자: ${v.name}`,
         `연락처: ${v.phone}`,
         `이메일: ${v.email}`,
-        `관심 교육: ${v.topic}`,
-        `교육 대상·인원: ${v.audience || "-"}`,
-        `희망 일정: ${v.date || "-"}`,
         "",
-        v.message,
+        buildMessage(),
       ].join("\n");
       const subject = encodeURIComponent(`[강의 의뢰] ${v.org} ${v.name}`);
       window.location.href = `mailto:${S.email}?subject=${subject}&body=${encodeURIComponent(body)}`;
       setSent(true);
+    }
+
+    if (sent && viaServer) {
+      return (
+        <div className="form-done" role="status">
+          <h2>문의가 접수되었습니다</h2>
+          <p>
+            {v.name} 님, 문의해 주셔서 감사합니다. 입력하신 이메일(<b>{v.email}</b>)로 접수 확인 메일을 보냈습니다.
+            내용을 확인한 뒤 빠르게 회신드리겠습니다. 메일이 보이지 않으면 스팸함을 확인해 주세요.
+          </p>
+          <button className="btn ghost dark" onClick={() => { setSent(false); setV(EMPTY); setErrors({}); }}>새 문의 작성하기</button>
+        </div>
+      );
     }
 
     if (sent) {
@@ -87,25 +145,30 @@
           <Field id="org" label="기관·회사명" required error={errors.org}>
             <input id="org" value={v.org} onChange={set("org")} autoComplete="organization" {...aria("org")} />
           </Field>
-          <Field id="name" label="담당자 성함" required error={errors.name}>
-            <input id="name" value={v.name} onChange={set("name")} autoComplete="name" {...aria("name")} />
+          <Field id="title" label="직함·부서">
+            <input id="title" placeholder="예: 교육팀 과장" value={v.title} onChange={set("title")} autoComplete="organization-title" />
           </Field>
         </div>
         <div className="row two">
+          <Field id="name" label="담당자 성함" required error={errors.name}>
+            <input id="name" value={v.name} onChange={set("name")} autoComplete="name" {...aria("name")} />
+          </Field>
           <Field id="phone" label="연락처" required error={errors.phone}>
             <input id="phone" type="tel" placeholder="010-0000-0000" value={v.phone} onChange={set("phone")} autoComplete="tel" {...aria("phone")} />
           </Field>
+        </div>
+        <div className="row two">
           <Field id="email" label="이메일" required error={errors.email}>
             <input id="email" type="email" placeholder="name@company.com" value={v.email} onChange={set("email")} autoComplete="email" {...aria("email")} />
           </Field>
+          <Field id="topic" label="관심 교육 분야">
+            <select id="topic" value={v.topic} onChange={set("topic")}>
+              {TOPICS.map((t) => (
+                <option key={t}>{t}</option>
+              ))}
+            </select>
+          </Field>
         </div>
-        <Field id="topic" label="관심 교육 분야">
-          <select id="topic" value={v.topic} onChange={set("topic")}>
-            {TOPICS.map((t) => (
-              <option key={t}>{t}</option>
-            ))}
-          </select>
-        </Field>
         <div className="row two">
           <Field id="audience" label="교육 대상·인원">
             <input id="audience" placeholder="예: 신입사원 30명" value={v.audience} onChange={set("audience")} />
@@ -133,8 +196,15 @@
           {errors.agree && <p className="err" id="agree-err" role="alert">{errors.agree}</p>}
         </div>
 
-        <button className="btn primary" type="submit">문의 메일 작성하기</button>
-        <p className="note">버튼을 누르면 사용 중인 메일 앱이 열리고 내용이 자동 입력됩니다. 메일을 <b>보내야</b> 접수됩니다.</p>
+        {serverError && <p className="err form-err" role="alert">{serverError}</p>}
+        <button className="btn primary" type="submit" disabled={sending}>
+          {sending ? "전송 중..." : viaServer ? "문의 보내기" : "문의 메일 작성하기"}
+        </button>
+        <p className="note">
+          {viaServer
+            ? "보내시면 바로 접수되고, 입력하신 이메일로 접수 확인 메일이 발송됩니다."
+            : "버튼을 누르면 사용 중인 메일 앱이 열리고 내용이 자동 입력됩니다. 메일을 보내야 접수됩니다."}
+        </p>
       </form>
     );
   }
