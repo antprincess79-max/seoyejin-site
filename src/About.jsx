@@ -15,7 +15,7 @@
             <p className="sub">{S.name} · {S.role}</p>
             <p className="lead">{S.intro}</p>
             <div className="btn-row">
-              <a className="btn primary" href="#contact">강의 의뢰하기</a>
+              <a className="btn primary" href="contact.html">강의 의뢰하기</a>
               <a className="btn ghost light" href={S.blog} target="_blank" rel="noopener noreferrer">운영 블로그 ↗</a>
             </div>
           </div>
