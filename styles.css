@@ -222,3 +222,14 @@ address{font-style:normal}
 
 .form-err{background:#fdecea;border-radius:8px;padding:10px 14px;margin-bottom:12px}
 .inquiry .btn:disabled{opacity:.6;cursor:wait;transform:none}
+
+/* contact form: mobile polish */
+.consent input[type=checkbox]{width:22px;height:22px;margin-top:2px;accent-color:var(--navy)}
+@media(max-width:600px){
+  .inquiry,.form-done{padding:18px 16px}
+  /* iOS Safari는 16px 미만 입력칸에 포커스하면 화면을 확대하므로 16px로 */
+  .inquiry input,.inquiry select,.inquiry textarea{font-size:16px}
+  .inquiry .btn{padding:15px 20px}
+  .form-wrap{gap:24px}
+  .hot a{font-size:1.2rem}
+}
